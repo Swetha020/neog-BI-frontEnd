@@ -1,15 +1,21 @@
 import Header from "./components/header"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import useFetch from "./useFetch"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
+
 export default function App() {
 
-  const {data,loading,error} = useFetch("http://localhost:3000/events")
- console.log(data)
+  const {data,loading,error} = useFetch("https://neog-bi-backend-swethas-projects-2c80ee43.vercel.app/events")
+  console.log(data)
   
-  const [filteredData, setFilteredData] = useState(data);
+  const [filteredData, setFilteredData] = useState([]);
   
-
+  useEffect(()=>{
+    if(data){
+      setFilteredData(data)
+    }
+  },[data])
   const selectHandler = (e) => {
     console.log(data)
     const value = e.target.value;
@@ -40,8 +46,9 @@ export default function App() {
        </div>
        <div className="row">
           {filteredData?.map((event) => <div className="col-md-4">
+            <Link to={`/events/${event._id}`} className="text-decoration-none">
             <div className="card m-3 border-0">
-            <img src={event.imgUrl} alt={event.title} className="rounded"/>
+            <img src={event.imgUrl} alt={event.title} className="rounded" height="250"/>
             <div className="card-img-overlay">
               <span className="bg-light p-2 rounded">{event.isOnlineEvent?"Online Event":"Offline Event"}</span>
             </div>
@@ -50,6 +57,7 @@ export default function App() {
               <p className="fs-4 fw-bold">{event.title}</p>
             </div>
             </div>
+            </Link>
           </div> )}
        </div>
     </main>
