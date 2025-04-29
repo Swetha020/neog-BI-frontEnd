@@ -5,17 +5,17 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
 export default function App() {
-
-  const {data,loading,error} = useFetch("https://neog-bi-backend-swethas-projects-2c80ee43.vercel.app/events")
-  console.log(data)
   
   const [filteredData, setFilteredData] = useState([]);
-  
+  const {data,loading,error} = useFetch("https://neog-bi-backend-swethas-projects-2c80ee43.vercel.app/events")
+
+
   useEffect(()=>{
     if(data){
       setFilteredData(data)
     }
   },[data])
+
   const selectHandler = (e) => {
     console.log(data)
     const value = e.target.value;
@@ -28,14 +28,32 @@ export default function App() {
   };
 
 
+  const searchHandler = (e) =>{
+    e.preventDefault()
+    const value = e.target.value
+    if(value!=""){
+    const filtered = data.filter((event)=>event.title.toUpperCase() === value.toUpperCase() || event.eventTags.includes(value.charAt(0).toUpperCase()+value.slice(1)))
+    if(filtered.length!=0){
+    setFilteredData(filtered)
+    }else{
+      setFilteredData("")
+    }}else{
+      setFilteredData(data)
+    }
+  }
+
   return (
     <div className="bg-body-tertiary">
     <Header/>
     <main className="container">
-    <hr />
+      
       <div className="d-flex justify-content-between">
       <h1>Meetup Events</h1>
       <div>
+      <form className="d-flex" role="search" >
+          <input className="form-control me-2" type="search" placeholder="🔍 Search by title and tags" aria-label="Search" onChange={searchHandler}/>
+      </form>
+      <br />
       <select className = "form-select w-auto " onChange={selectHandler}>
           <option value="" selected disabled>Select Event Type</option>
           <option value="Online">Online</option>
@@ -44,8 +62,11 @@ export default function App() {
        </select>
        </div>
        </div>
+       {loading && <div className="container text-center">
+            <h1 className="display-4">Loading...</h1>
+            </div>}
        <div className="row">
-          {filteredData?.map((event) => <div className="col-md-4">
+          {filteredData? filteredData.map((event) => <div className="col-md-4">
             <Link to={`/events/${event._id}`} className="text-decoration-none">
             <div className="card m-3 border-0">
             <img src={event.imgUrl} alt={event.title} className="rounded" height="250"/>
@@ -58,7 +79,11 @@ export default function App() {
             </div>
             </div>
             </Link>
-          </div> )}
+          </div> ): <div className="container text-center">
+            <h1 className="display-4">No Relevant Events Found </h1>
+            <p className="fw-light">(Please Clear your search to view all events.)</p>
+            </div>
+ }
        </div>
     </main>
     </div>

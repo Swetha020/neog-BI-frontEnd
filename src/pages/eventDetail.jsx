@@ -1,14 +1,21 @@
 import { useParams } from "react-router-dom"
 import Header from "../components/header"
 import useFetch from "../useFetch"
+
+
 const EventDetail = () =>{
+    
     const eventID = useParams()
-    console.log(eventID)
-    const {data,loading,error} = useFetch(`http://localhost:3000/events/${eventID.eventId}`)
-    console.log(data)
+    //console.log(eventID)
+    const {data,loading,error} = useFetch(`https://neog-bi-backend-swethas-projects-2c80ee43.vercel.app/events/${eventID.eventId}`)
+    //console.log(data)
     return(
         <div className=" bg-body-tertiary pb-5">
         <Header/>
+        {loading && <div className="container text-center">
+            <h1 className="display-4">Loading...</h1>
+            </div>}
+       
         {data&&     
        
         <div className="container">
@@ -21,25 +28,36 @@ const EventDetail = () =>{
                     <h5>Details:</h5>
                     <p>{data.details}</p>
                     <h5>Additional Information:</h5>
-                    <p><strong>Dress Code: </strong>{data.dressCode}</p>
-                    <p><strong>Age Restrictions: </strong>{data.ageRestrictions?"18 and above":"-"}</p>
+                    <p><strong>Dress Code: </strong>{data.dressCode?data.dressCode:"Nil"}</p>
+                    <p><strong>Age Restrictions: </strong>{data.ageRestrictions?"18 and above":"Nil"}</p>
                     <h4 className="mb-3">Event Tags:</h4>
                     {data.eventTags.map((tag)=> <span className="bg-danger text-light rounded p-2 me-3">{tag}</span>)}
+                    <br />
+                    <br />
                 </div>
                 <div className="col-md-2"></div>
                 <div className="col-md-4">
                     <div className="card mb-4">
                         <div className="card-body">
+                            <div className="d-flex align-items-center">
+                            <span className="material-symbols-outlined">schedule</span>
+                            <div className="mx-2">
                            {data.startDate} at {data.startTime} to <br /> 
                            {data.endDate} at {data.endTime} 
-                            <br />
-                            <br />
-                            {data.location.split(",")[1]}
-                            <br />
+                           </div>
+                           </div>
+                           <br />
+                            <div className="d-flex align-items-center">
+                            <span className="material-symbols-outlined">location_on</span>
+                            <div className="mx-2">{data.location.split(",")[1]} <br />
                             {data.location.split(",")[0]}
+                            </div>
+                            </div>
                             <br />
-                            <br />
-                            {data.fee}
+                            <div className="d-flex align-items-center">
+                            <span className="material-symbols-outlined">currency_rupee</span> 
+                            <div className="mx-2">{data.fee}</div>
+                            </div>
                         </div>
                     </div>
                     <div>
